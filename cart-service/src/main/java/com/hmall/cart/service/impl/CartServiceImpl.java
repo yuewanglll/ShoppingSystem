@@ -1,5 +1,6 @@
 package com.hmall.cart.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,12 +11,17 @@ import com.hmall.common.utils.UserContext;
 import com.hmall.cart.mapper.CartMapper;
 import com.hmall.cart.service.ICartService;
 import com.hmall.cart.service.IItemService;
+import com.hmall.service.IUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.hmall.cart.domain.dto.CartFormDTO;
 import com.hmall.cart.domain.dto.ItemDTO;
 import com.hmall.cart.domain.vo.CartVO;
 import com.hmall.cart.domain.po.Cart;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,9 +40,11 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class CartServiceImpl extends ServiceImpl<CartMapper,Cart> implements ICartService {
+public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements ICartService {
 
     private final IItemService itemService;
+    private final RestTemplate restTemplate;
+    private final CartMapper cartMapper;
 
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
@@ -44,7 +52,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper,Cart> implements ICa
         Long userId = UserContext.getUser();
 
         // 2.判断是否已经存在
-        if(checkItemExists(cartFormDTO.getItemId(), userId)){
+        if (checkItemExists(cartFormDTO.getItemId(), userId)) {
             // 2.1.存在，则更新数量
             baseMapper.updateNum(cartFormDTO.getItemId(), userId);
             return;
@@ -62,12 +70,12 @@ public class CartServiceImpl extends ServiceImpl<CartMapper,Cart> implements ICa
     }
 
 
-
     @Override
     public List<CartVO> queryMyCarts() {
         // 1.查询我的购物车列表
-        //todo:此处需要从UserContex中获取登录用户，我们需要先写死
-        List<Cart> carts = lambdaQuery().eq(Cart::getUserId, 1L/*UserContext.getUser()*/).list();
+        // todo:用户id给死 ，方便测试 并且item服务需要打开
+        //List<Cart> carts = lambdaQuery().eq(Cart::getUserId,1L).list();
+        List<Cart> carts= cartMapper.getListById(1L);
         if (CollUtils.isEmpty(carts)) {
             //返回一个不可变的空集合
             return CollUtils.emptyList();
@@ -87,10 +95,27 @@ public class CartServiceImpl extends ServiceImpl<CartMapper,Cart> implements ICa
         // 1.获取商品id
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
         // 2.查询商品
-        List<ItemDTO> items = itemService.queryItemByIds(itemIds);
+        // List<ItemDTO> items = itemService.queryItemByIds(itemIds);
+        //2.1 利用RestTempLate发送http请求，得到http响应
+        ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
+                "http://localhost:8082/items?ids={ids}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<ItemDTO>>() {
+                },
+                Map.of("ids", CollUtil.join(itemIds, ","))
+        );
+
+        //2.2 解析响应
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            //查询失败，直接结束
+            return;
+        }
+        List<ItemDTO> items = response.getBody();
         if (CollUtils.isEmpty(items)) {
             return;
         }
+
         // 3.转为 id 到 item的map
         Map<Long, ItemDTO> itemMap = items.stream().collect(Collectors.toMap(ItemDTO::getId, Function.identity()));
         // 4.写入vo
