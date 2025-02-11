@@ -1,24 +1,21 @@
 package com.hmall.cart.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
+
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmall.api.client.ItemClient;
 import com.hmall.common.exception.BizIllegalException;
 import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.CollUtils;
 import com.hmall.common.utils.UserContext;
 import com.hmall.cart.mapper.CartMapper;
 import com.hmall.cart.service.ICartService;
-import com.hmall.cart.service.IItemService;
-import com.hmall.service.IUserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import com.hmall.cart.domain.dto.CartFormDTO;
-import com.hmall.cart.domain.dto.ItemDTO;
+import com.hmall.api.dto.ItemDTO;
 import com.hmall.cart.domain.vo.CartVO;
 import com.hmall.cart.domain.po.Cart;
 import org.springframework.web.client.RestTemplate;
@@ -42,10 +39,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements ICartService {
 
-    private final IItemService itemService;
     private final RestTemplate restTemplate;
     private final CartMapper cartMapper;
-
+    private final DiscoveryClient discoveryClient;
+    private final ItemClient itemClient;
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
@@ -75,7 +72,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         // 1.查询我的购物车列表
         // todo:用户id给死 ，方便测试 并且item服务需要打开
         //List<Cart> carts = lambdaQuery().eq(Cart::getUserId,1L).list();
-        List<Cart> carts= cartMapper.getListById(1L);
+        List<Cart> carts = cartMapper.getListById(1L);
         if (CollUtils.isEmpty(carts)) {
             //返回一个不可变的空集合
             return CollUtils.emptyList();
@@ -94,24 +91,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     private void handleCartItems(List<CartVO> vos) {
         // 1.获取商品id
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
-        // 2.查询商品
-        // List<ItemDTO> items = itemService.queryItemByIds(itemIds);
-        //2.1 利用RestTempLate发送http请求，得到http响应
-        ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
-                "http://localhost:8082/items?ids={ids}",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ItemDTO>>() {
-                },
-                Map.of("ids", CollUtil.join(itemIds, ","))
-        );
 
-        //2.2 解析响应
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            //查询失败，直接结束
-            return;
-        }
-        List<ItemDTO> items = response.getBody();
+        // 2.通过feignClient发送跨服务请求
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
+
         if (CollUtils.isEmpty(items)) {
             return;
         }
