@@ -14,6 +14,9 @@
         <module>cart-service</module>
         <module>item-service</module>
         <module>hm-api</module>
+        <module>user-service</module>
+        <module>tarde-service</module>
+        <module>pay-service</module>
     </modules>
 
     <parent>
