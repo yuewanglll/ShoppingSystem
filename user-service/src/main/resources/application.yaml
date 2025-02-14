@@ -3,6 +3,10 @@ server:
 spring:
   application:
     name: user-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.174.128:8848
   profiles:
     active: local
   datasource:

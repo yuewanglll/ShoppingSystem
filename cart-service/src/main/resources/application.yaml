@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   application:
-    name: hm-cart
+    name: cart-service
   cloud:
     nacos:
       discovery:
@@ -43,9 +43,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.hmall.cart.controller
-feign:
-  okhttp:
-    enabled: true
+          -
 hm:
   jwt:
     location: classpath:hmall.jks
