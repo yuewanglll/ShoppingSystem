@@ -3,7 +3,11 @@ package com.hmall.item.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hmall.item.domain.dao.OrderDetailDTO;
 import com.hmall.item.domain.po.Item;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +21,12 @@ public interface ItemMapper extends BaseMapper<Item> {
 
     @Update("UPDATE item SET stock = stock - #{num} WHERE id = #{itemId}")
     void updateStock(OrderDetailDTO orderDetail);
+
+    List<Item> qureyByIds(Collection<Long> ids);
+
+
+@Select("select * from item")
+    List<Item> getItemS();
+
+
 }

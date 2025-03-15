@@ -2,6 +2,7 @@ package com.hmall.cart.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hmall.cart.domain.po.Cart;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -23,4 +24,14 @@ public interface CartMapper extends BaseMapper<Cart> {
 
     @Select("SELECT * from `hm-cart`.cart where user_id=#{id}")
     List<Cart> getListById(long id);
+
+
+    @Select("select count(id) from cart where user_id=#{userId} and item_id=#{itemId}")
+    int getCartCountByUserIdAndItemId(Long itemId, Long userId);
+
+    @Select("select count(id) from cart where user_id=#{userId}")
+    int getCartCountByUserId(Long userId);
+
+
+    void ByInsert(Cart cart);
 }

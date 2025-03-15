@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmall.api.client.ItemClient;
+import com.hmall.cart.config.CartProperties;
+import com.hmall.cart.mapper.ItemMapper;
 import com.hmall.common.exception.BizIllegalException;
 import com.hmall.common.utils.BeanUtils;
 import com.hmall.common.utils.CollUtils;
@@ -12,13 +14,11 @@ import com.hmall.common.utils.UserContext;
 import com.hmall.cart.mapper.CartMapper;
 import com.hmall.cart.service.ICartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import com.hmall.cart.domain.dto.CartFormDTO;
 import com.hmall.api.dto.ItemDTO;
 import com.hmall.cart.domain.vo.CartVO;
 import com.hmall.cart.domain.po.Cart;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,10 +39,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements ICartService {
 
-    private final RestTemplate restTemplate;
     private final CartMapper cartMapper;
-    private final DiscoveryClient discoveryClient;
+
     private final ItemClient itemClient;
+
+    private final CartProperties cartProperties;
+
+    private final ItemMapper itemMapper;
+
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
@@ -63,16 +67,15 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         // 3.2.保存当前用户
         cart.setUserId(userId);
         // 3.3.保存到数据库
-        save(cart);
+//        save(cart);
+        cartMapper.ByInsert(cart);
     }
-
 
     @Override
     public List<CartVO> queryMyCarts() {
         // 1.查询我的购物车列表
-        // todo:用户id给死 ，方便测试 并且item服务需要打开
         //List<Cart> carts = lambdaQuery().eq(Cart::getUserId,1L).list();
-        List<Cart> carts = cartMapper.getListById(1L);
+        List<Cart> carts = cartMapper.getListById(UserContext.getUser());
         if (CollUtils.isEmpty(carts)) {
             //返回一个不可变的空集合
             return CollUtils.emptyList();
@@ -94,7 +97,6 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 
         // 2.通过feignClient发送跨服务请求
         List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
-
         if (CollUtils.isEmpty(items)) {
             return;
         }
@@ -125,17 +127,20 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     }
 
     private void checkCartsFull(Long userId) {
-        int count = lambdaQuery().eq(Cart::getUserId, userId).count();
-        if (count >= 10) {
-            throw new BizIllegalException(StrUtil.format("用户购物车课程不能超过{}", 10));
+//        int count = lambdaQuery().eq(Cart::getUserId, userId).count();
+        int count=cartMapper.getCartCountByUserId(userId);
+        if (count >= cartProperties.getMaxAmount()) {
+            throw new BizIllegalException(StrUtil.format("用户购物车课程不能超过{}", cartProperties.getMaxAmount()));
         }
     }
 
     private boolean checkItemExists(Long itemId, Long userId) {
-        int count = lambdaQuery()
-                .eq(Cart::getUserId, userId)
-                .eq(Cart::getItemId, itemId)
-                .count();
+//        int count = lambdaQuery()
+//                .eq(Cart::getUserId, userId)
+//                .eq(Cart::getItemId, itemId)
+//                .count();
+
+        int count=cartMapper.getCartCountByUserIdAndItemId(itemId,userId);
         return count > 0;
     }
 

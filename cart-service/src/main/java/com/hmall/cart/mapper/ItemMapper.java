@@ -1,9 +1,13 @@
 package com.hmall.cart.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.hmall.api.dto.ItemDTO;
 import com.hmall.cart.domain.dto.OrderDetailDTO;
 import com.hmall.cart.domain.po.Item;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -17,4 +21,7 @@ public interface ItemMapper extends BaseMapper<Item> {
 
     @Update("UPDATE item SET stock = stock - #{num} WHERE id = #{itemId}")
     void updateStock(OrderDetailDTO orderDetail);
+
+
+
 }

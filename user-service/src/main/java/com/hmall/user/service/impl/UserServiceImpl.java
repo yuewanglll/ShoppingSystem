@@ -37,13 +37,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     private final JwtProperties jwtProperties;
 
+    private final UserMapper userMapper;
+
     @Override
     public UserLoginVO login(LoginFormDTO loginDTO) {
         // 1.数据校验
         String username = loginDTO.getUsername();
         String password = loginDTO.getPassword();
         // 2.根据用户名或手机号查询
-        User user = lambdaQuery().eq(User::getUsername, username).one();
+        //User user = lambdaQuery().eq(User::getUsername, username).one();
+        User user = userMapper.quryByusername(username);
         Assert.notNull(user, "用户名错误");
         // 3.校验是否禁用
         if (user.getStatus() == UserStatus.FROZEN) {

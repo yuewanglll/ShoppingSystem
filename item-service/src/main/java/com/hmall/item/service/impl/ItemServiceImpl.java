@@ -3,13 +3,13 @@ package com.hmall.item.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmall.common.exception.BizIllegalException;
 import com.hmall.common.utils.BeanUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.hmall.item.domain.dao.ItemDTO;
 import com.hmall.item.domain.dao.OrderDetailDTO;
 import com.hmall.item.domain.po.Item;
 import com.hmall.item.mapper.ItemMapper;
 import com.hmall.item.service.IItemService;
-
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +22,10 @@ import java.util.List;
  * @author 虎哥
  */
 @Service
-public class ItemServiceImpl extends ServiceImpl<ItemMapper,Item> implements IItemService{
+@RequiredArgsConstructor
+public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements IItemService {
+
+    private final ItemMapper itemMapper;
 
     @Override
     public void deductStock(List<OrderDetailDTO> items) {
@@ -40,6 +43,7 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper,Item> implements IIt
 
     @Override
     public List<ItemDTO> queryItemByIds(Collection<Long> ids) {
+        //List<Item> itemList = itemMapper.qureyByIds(ids);
         return BeanUtils.copyList(listByIds(ids), ItemDTO.class);
     }
 }
