@@ -29,6 +29,7 @@
       <module name="hm-common" options="-parameters" />
       <module name="hm-gateway" options="-parameters" />
       <module name="hm-service" options="-parameters" />
+      <module name="hmall" options="-parameters" />
       <module name="item-service" options="-parameters" />
       <module name="pay-service" options="-parameters" />
       <module name="tarde-service" options="-parameters" />
