@@ -60,23 +60,12 @@
         </dependency>
     </dependencies>
     <build>
+<!--  构建jar包的最终名称      -->
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>
-                            repackage
-                        </id>
-                        <goals>
-                            <goal>
-                                repackage
-                            </goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

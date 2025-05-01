@@ -11,9 +11,15 @@ hm:
     package: com.hmall.cart.controller
   db:
     database: hm-cart
+    port: 3307
+    host: 192.168.174.128
+    user: root
+    pw: 123
 feign:
   sentinel:
     enabled: true #开启feign对sentinel的支持
+  okhttp:
+    enabled: true
 spring:
   cloud:
     sentinel:

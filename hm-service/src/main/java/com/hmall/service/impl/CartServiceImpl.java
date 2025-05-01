@@ -62,6 +62,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         save(cart);
     }
 
+    //todo:已经进行微服务拆分，很多东西需要删除
     @Override
     public List<CartVO> queryMyCarts() {
         // 1.查询我的购物车列表
@@ -80,6 +81,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
         // 4.返回
         return vos;
     }
+
+
 
     private void handleCartItems(List<CartVO> vos) {
         // 1.获取商品id

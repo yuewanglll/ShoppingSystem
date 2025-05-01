@@ -12,11 +12,19 @@ import org.springframework.context.annotation.Bean;
 
 @Slf4j
 public class DefaultFeignConfig {
+    /**
+     * feign日志级别
+     * @return
+     */
     @Bean
     public Logger.Level feignLogLevel(){
         return Logger.Level.FULL;
     }
 
+    /**
+     * feign拦截器，将用户信息传递给下游微服务
+     * @return
+     */
     @Bean
     public RequestInterceptor userInfoRequestInterceptor(){
         return new RequestInterceptor() {
@@ -36,6 +44,10 @@ public class DefaultFeignConfig {
         };
     }
 
+    /**
+     * 创建商品服务降级处理类
+     * @return
+     */
     @Bean
     public ItemClientFallback itemClientFallback(){
         return new ItemClientFallback();
