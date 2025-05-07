@@ -8,8 +8,6 @@ import com.hmall.common.domain.PageQuery;
 import com.hmall.common.domain.dto.OrderDetailDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
 import java.util.List;
 
 @FeignClient(value = "item-service",
@@ -18,7 +16,7 @@ import java.util.List;
 public interface ItemClient {
 
     @GetMapping("/items")
-    List<ItemDTO> queryItemByIds(@RequestParam("ids") Collection<Long> ids);
+    List<ItemDTO> queryItemByIds(@RequestParam("ids") List<Long> ids);
 
     @GetMapping("/items/page")
     PageDTO<ItemDTO> queryItemByPage(@RequestBody PageQuery query);

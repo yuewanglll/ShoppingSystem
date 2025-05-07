@@ -3,7 +3,7 @@ server:
 hm:
   swagger:
     title: 购物车服务接口文档
-    package: com.hmall.cart.controller
+    package: com.hmall.item.controller
   db:
     database: hm-item
     port: 3307

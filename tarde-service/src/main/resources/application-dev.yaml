@@ -1,4 +1,7 @@
 hm:
   db:
-    host: mysql
+    databases: hmall
+    host: 192.168.14.128
+    port: 3307
+    user: root
     pw: 123

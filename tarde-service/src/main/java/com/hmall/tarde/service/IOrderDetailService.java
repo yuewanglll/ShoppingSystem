@@ -1,7 +1,7 @@
 package com.hmall.tarde.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hmall.tarde.domain.po.OrderDetail;
+import com.hmall.common.domain.po.OrderDetail;
 
 
 /**

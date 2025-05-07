@@ -35,7 +35,7 @@ public class ItemController {
 
     @ApiOperation("根据id批量查询商品")
     @GetMapping
-    public List<ItemDTO> queryItemByIds(@RequestParam("ids") List<Long> ids){
+    public List<ItemDTO> queryItemByIds(@RequestParam("ids") List<Long> ids) throws InterruptedException {
         List<ItemDTO> itemDTOS = itemService.queryItemByIds(ids);
         return itemDTOS;
     }

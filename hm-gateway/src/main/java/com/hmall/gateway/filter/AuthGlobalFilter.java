@@ -3,6 +3,8 @@ package com.hmall.gateway.filter;
 
 
 import java.util.List;
+import java.util.function.Consumer;
+
 import com.hmall.common.exception.UnauthorizedException;
 import com.hmall.common.utils.CollUtils;
 import com.hmall.gateway.config.AuthProperties;
@@ -30,8 +32,15 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     private final AuthProperties authProperties;
 
+    //spring提供的工具类，用于匹配路径
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
+    /**
+     * 登录校验
+     * @param exchange 请求
+     * @param chain 放行
+     * @return  Mono
+     */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // 1.获取Request
@@ -60,9 +69,12 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
         // 5.传递用户信息
         String userInfo = userId.toString();
+
+
         ServerWebExchange ex = exchange.mutate()
                 .request(b -> b.header("user-info", userInfo))
                 .build();
+
         // 6.放行
         return chain.filter(ex);
     }
@@ -78,6 +90,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
+        //值越小执行顺序越靠前
         return 0;
     }
 }

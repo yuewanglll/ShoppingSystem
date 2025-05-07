@@ -11,3 +11,4 @@ hm:
       - /search/**
       - /users/login
       - /items/**
+      - /carts/**  #todo:为了方便测试暂时将carts也设置为不需要拦截

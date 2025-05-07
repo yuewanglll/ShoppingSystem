@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @MapperScan("com.hmall.tarde.mapper")
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.hmall.api.client",defaultConfiguration = DefaultFeignConfig.class)
+@EnableFeignClients(basePackages = "com.hmall.api.client", defaultConfiguration =DefaultFeignConfig.class)
 public class TardeApplication {
     public static void main(String[] args) {
         SpringApplication.run(TardeApplication.class, args);

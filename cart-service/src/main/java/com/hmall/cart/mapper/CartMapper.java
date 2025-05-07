@@ -23,7 +23,7 @@ public interface CartMapper extends BaseMapper<Cart> {
     void updateNum(@Param("itemId") Long itemId, @Param("userId") Long userId);
 
     @Select("SELECT * from `hm-cart`.cart where user_id=#{id}")
-    List<Cart> getListById(long id);
+    List<Cart> getListById(Long id);
 
 
     @Select("select count(id) from cart where user_id=#{userId} and item_id=#{itemId}")

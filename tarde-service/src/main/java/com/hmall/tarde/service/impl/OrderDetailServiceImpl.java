@@ -2,7 +2,8 @@ package com.hmall.tarde.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.hmall.tarde.domain.po.OrderDetail;
+
+import com.hmall.common.domain.po.OrderDetail;
 import com.hmall.tarde.mapper.OrderDetailMapper;
 
 import com.hmall.tarde.service.IOrderDetailService;

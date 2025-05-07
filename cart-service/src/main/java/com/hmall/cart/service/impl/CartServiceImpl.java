@@ -19,10 +19,7 @@ import com.hmall.cart.domain.vo.CartVO;
 import com.hmall.cart.domain.po.Cart;
 import com.hmall.common.domain.dto.ItemDTO;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -74,9 +71,11 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     //todo:该模块已经进行微服务拆分的，但是hm-service还是有相关的代码
     @Override
     public List<CartVO> queryMyCarts() {
+        //todo:用swagger文档测试没有登录，userId暂时先写死
+
         // 1.查询我的购物车列表
-        List<Cart> carts = lambdaQuery().eq(Cart::getUserId,UserContext.getUser()).list();
-        //List<Cart> carts = cartMapper.getListById(UserContext.getUser());
+        //List<Cart> carts = lambdaQuery().eq(Cart::getUserId,1L).list();
+        List<Cart> carts = cartMapper.getListById(1L);
         if (CollUtils.isEmpty(carts)) {
             //返回一个不可变的空集合
             return CollUtils.emptyList();
@@ -95,12 +94,13 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     //todo:ok连接池未测试
 
     private void handleCartItems(List<CartVO> vos) {
+
         // 1.获取商品id
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
-
+        List<Long> itemIdList = new ArrayList<>(itemIds);
         // 2.通过feignClient发送跨服务请求
         //todo：应该用RestTemplate，然后将该微服务删除itemservice
-        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIdList);
         if (CollUtils.isEmpty(items)) {
             return;
         }

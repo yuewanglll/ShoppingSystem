@@ -3,8 +3,8 @@ package com.hmall.tarde.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hmall.tarde.domain.dto.OrderFormDTO;
-import com.hmall.tarde.domain.po.Order;
+import com.hmall.common.domain.dto.OrderFormDTO;
+import com.hmall.common.domain.po.Order;
 
 
 /**

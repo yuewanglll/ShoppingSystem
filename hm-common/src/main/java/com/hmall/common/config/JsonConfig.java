@@ -1,5 +1,6 @@
 package com.hmall.common.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -20,4 +21,6 @@ public class JsonConfig {
             jacksonObjectMapperBuilder.serializerByType(BigInteger.class, ToStringSerializer.instance);
         };
     }
+
+
 }

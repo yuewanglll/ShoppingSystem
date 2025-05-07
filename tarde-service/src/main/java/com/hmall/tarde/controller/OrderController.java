@@ -1,9 +1,10 @@
 package com.hmall.tarde.controller;
 
+import com.hmall.common.domain.dto.OrderFormDTO;
+import com.hmall.common.domain.vo.OrderVO;
 import com.hmall.common.utils.BeanUtils;
 
-import com.hmall.tarde.domain.dto.OrderFormDTO;
-import com.hmall.tarde.domain.vo.OrderVO;
+
 import com.hmall.tarde.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
